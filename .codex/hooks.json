@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "ctxpin ade show --format codex",
+            "timeoutSec": 10
+          }
+        ]
+      }
+    ]
+  }
+}
