@@ -22,6 +22,7 @@ func Run(t *testing.T, newStore func() state.StateStore) {
 	t.Run("ListPendingVMs", func(t *testing.T) { testListPendingVMs(t, newStore()) })
 	t.Run("Events", func(t *testing.T) { testEvents(t, newStore()) })
 	t.Run("Controllers", func(t *testing.T) { testControllers(t, newStore()) })
+	t.Run("ListControllers", func(t *testing.T) { testListControllers(t, newStore()) })
 	t.Run("NotFoundErrors", func(t *testing.T) { testNotFoundErrors(t, newStore()) })
 }
 
@@ -235,6 +236,47 @@ func testControllers(t *testing.T, s state.StateStore) {
 		t.Fatalf("UpdateControllerHeartbeat: %v", err)
 	}
 	_ = before // heartbeat timestamp is set internally
+}
+
+func testListControllers(t *testing.T, s state.StateStore) {
+	ctx := context.Background()
+
+	c1 := model.Controller{ID: "ctrl-1", Status: "active", Capacity: model.CapacityInfo{TotalVCPUs: 8}}
+	c2 := model.Controller{ID: "ctrl-2", Status: "draining", Capacity: model.CapacityInfo{TotalVCPUs: 16}}
+	c3 := model.Controller{ID: "ctrl-3", Status: "active", Capacity: model.CapacityInfo{TotalVCPUs: 4}}
+
+	for _, c := range []model.Controller{c1, c2, c3} {
+		if err := s.RegisterController(ctx, c); err != nil {
+			t.Fatalf("RegisterController(%s): %v", c.ID, err)
+		}
+	}
+
+	// List all.
+	all, err := s.ListControllers(ctx, model.ControllerFilter{})
+	if err != nil {
+		t.Fatalf("ListControllers (all): %v", err)
+	}
+	if len(all) != 3 {
+		t.Errorf("expected 3 controllers, got %d", len(all))
+	}
+
+	// Filter by status.
+	active, err := s.ListControllers(ctx, model.ControllerFilter{Status: "active"})
+	if err != nil {
+		t.Fatalf("ListControllers (active): %v", err)
+	}
+	if len(active) != 2 {
+		t.Errorf("expected 2 active controllers, got %d", len(active))
+	}
+
+	// Limit.
+	limited, err := s.ListControllers(ctx, model.ControllerFilter{Limit: 1})
+	if err != nil {
+		t.Fatalf("ListControllers (limit): %v", err)
+	}
+	if len(limited) != 1 {
+		t.Errorf("expected 1 controller with limit, got %d", len(limited))
+	}
 }
 
 func testNotFoundErrors(t *testing.T, s state.StateStore) {

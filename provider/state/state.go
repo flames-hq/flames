@@ -22,4 +22,5 @@ type StateStore interface {
 
 	RegisterController(ctx context.Context, controller model.Controller) error
 	UpdateControllerHeartbeat(ctx context.Context, controllerID string, heartbeat model.Heartbeat) error
+	ListControllers(ctx context.Context, filter model.ControllerFilter) ([]model.Controller, error)
 }

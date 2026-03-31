@@ -198,6 +198,24 @@ func (s *Store) UpdateControllerHeartbeat(_ context.Context, controllerID string
 	return nil
 }
 
+// ListControllers returns controllers matching the given filter criteria.
+func (s *Store) ListControllers(_ context.Context, filter model.ControllerFilter) ([]model.Controller, error) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
+	var result []model.Controller
+	for _, c := range s.controllers {
+		if filter.Status != "" && c.Status != filter.Status {
+			continue
+		}
+		result = append(result, c)
+		if filter.Limit > 0 && len(result) >= filter.Limit {
+			break
+		}
+	}
+	return result, nil
+}
+
 func newID() string {
 	b := make([]byte, 16)
 	_, _ = rand.Read(b)

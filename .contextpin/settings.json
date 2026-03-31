@@ -1,0 +1,25 @@
+{
+  "label_rules": [
+    {
+      "pattern": "BUG",
+      "color_hex": "#c0392b"
+    },
+    {
+      "pattern": "FEAT",
+      "color_hex": "#009432"
+    },
+    {
+      "pattern": "CHORE",
+      "color_hex": "#bdc3c7"
+    },
+    {
+      "pattern": "DOCS",
+      "color_hex": "#2c3e50"
+    },
+    {
+      "pattern": "SPEC-*",
+      "color_hex": "#2c3e50"
+    }
+  ],
+  "notes_ordering_enabled": true
+}

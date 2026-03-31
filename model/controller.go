@@ -25,3 +25,10 @@ type Heartbeat struct {
 	Status   string       `json:"status"`
 	Capacity CapacityInfo `json:"capacity"`
 }
+
+// ControllerFilter specifies criteria for listing controllers.
+// Zero-value fields are ignored when filtering.
+type ControllerFilter struct {
+	Status string `json:"status"` // filter by status ("active", "draining", "offline")
+	Limit  int    `json:"limit"`
+}
